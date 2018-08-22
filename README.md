@@ -1,4 +1,4 @@
-# CTK
+# ![CTK Logo](CTK.png "CTK Logo") CTK
 
 CTK is a user interface toolkit for host-agnostic audio plugin UIs written
 in C++ under LGPL 3.0 license.
