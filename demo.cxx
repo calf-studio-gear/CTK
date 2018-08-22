@@ -41,6 +41,6 @@ DemoUI::DemoUI (PuglNativeWindow parent, const char* _title) : CTK::UI (parent, 
     box2->resize(40, 80);
     con1->add(box2, 10, 20, 0);
     
-    rescale(1.5);
+    rescale(2.5);
     //rescale(5);
 }
