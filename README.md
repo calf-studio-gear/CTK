@@ -1,6 +1,6 @@
 # CTK
 
-CTK is a uder interface toolkit for host-agnostic audio plugin UIs written
+CTK is a user interface toolkit for host-agnostic audio plugin UIs written
 in C++ under LGPL 3.0 license.
 
 It is based on pugl library for event and window handling and cairo graphics
