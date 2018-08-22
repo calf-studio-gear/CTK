@@ -61,7 +61,7 @@ public:
     virtual void resize (int _w, int _h);
     virtual void rescale (float s);
     virtual void repos (int _x, int _y);
-    
+    virtual void invalidate (CTK::Area* a);
     virtual void expose ();
     
     virtual int event (const PuglEvent* event);

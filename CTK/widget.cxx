@@ -131,6 +131,12 @@ void Widget::expose ()
     resetInvalid();
 }
 
+void Widget::invalidate (CTK::Area* a)
+{
+    addInvalid(a);
+    redraw();
+}
+
 void Widget::calcDimensions ()
 {
     xs = (int)ceil((float)x * scale);
