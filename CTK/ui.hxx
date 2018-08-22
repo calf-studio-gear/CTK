@@ -64,6 +64,7 @@ protected:
     virtual void rescale (float scale);
     virtual void resize ();
     virtual void recalc ();
+    virtual void expose ();
     
     void resizeWindow (PuglView* view, int w, int h);
 

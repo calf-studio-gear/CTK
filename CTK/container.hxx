@@ -47,6 +47,7 @@ public:
     virtual void rescale (float s);
     virtual void repos (int x, int y);
     virtual void expose ();
+    
     virtual void calcDimensions();
 };
 

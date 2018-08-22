@@ -75,6 +75,15 @@ void UI::recalc ()
     resizeWindow(view, ws, hs);
 }
 
+void UI::expose ()
+{
+    if (DEBUG) printf(UI_DEBUG_H " expose x0:%d y0:%d x1:%d y1:%d\n", id, invalid.x0, invalid.y0, invalid.x1, invalid.y1);
+    
+    Container::expose();
+    
+    resetInvalid();
+}
+
 void UI::addToQueue (CTK::Widget* w)
 {
     if (DEBUG) printf(COL_YELLOW "UI #%d" COL_0 " addToQueue id:%d\n", id, w->id);
@@ -97,8 +106,7 @@ void UI::addToQueue (CTK::Widget* w)
         a.y0 = w->ys + w->invalid.y0;
         a.x1 = w->xs + w->invalid.x1;
         a.y1 = w->ys + w->invalid.y1;
-        w->parent->addInvalid(&a);
-        addToQueue(w->parent);
+        w->parent->invalidate(&a);
     }
 }
 

@@ -37,17 +37,7 @@ void Container::expose ()
 {
     if (DEBUG) printf(CONTAINER_DEBUG_H " expose x0:%d y0:%d x1:%d y1:%d\n", id, invalid.x0, invalid.y0, invalid.x1, invalid.y1);
     
-    int x0 = invalid.x0;
-    int y0 = invalid.y0;
-    int x1 = invalid.x1;
-    int y1 = invalid.y1;
-    
     Widget::expose();
-    
-    invalid.x0 = x0;
-    invalid.y0 = y0;
-    invalid.x1 = x1;
-    invalid.y1 = y1;
     
     cairo_t* cr = cairo_create(surface);
     setInvalidClip(cr);
@@ -55,21 +45,20 @@ void Container::expose ()
     for (unsigned int i = 0; i < children.size(); i++) {
         CTK::Widget* w = children[i];
         if (DEBUG) printf("    testing #%d - xs:%d ys:%d ws:%d hs:%d\n", w->id, w->xs, w->ys, w->ws, w->hs); 
-        if (w->xs <= x0+x1 and
-            w->ys <= y0+y1 and
-            w->xs+w->ws >= x0 and
-            w->ys+w->hs >= y0
+        if (w->xs <= invalid.x0 + invalid.x1 and
+            w->ys <= invalid.y0 + invalid.y1 and
+            w->xs + w->ws >= invalid.x0 and
+            w->ys + w->hs >= invalid.y0
         ) {
             if (DEBUG) printf("    drawing #%d - x0:%d y0:%d x1:%d y1:%d\n", w->id, w->invalid.x0, w->invalid.y0, w->invalid.x1, w->invalid.y1);
             cairo_rectangle(cr, w->xs, w->ys, w->ws, w->hs);
             cairo_set_source_surface(cr, w->surface, w->xs, w->ys);
             cairo_paint(cr);
         }
+        w->resetInvalid();
     }
     
     cairo_destroy(cr);
-    
-    resetInvalid();
 }
 
 void Container::repos (int x, int y)

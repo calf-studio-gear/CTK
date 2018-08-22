@@ -29,10 +29,10 @@ int counter = 0;
 
 void joinAreas (CTK::Area* a1, CTK::Area* a2)
 {
-    a1->x0 = std::min(a1->x0, a2->x0);
-    a1->y0 = std::min(a1->y0, a2->y0);
-    a1->x1 = std::max(a1->x1, a2->x1);
-    a1->y1 = std::max(a1->y1, a2->y1);
+    if (a1->x0 < 0) a1->x0 = a2->x0; else a1->x0 = std::min(a1->x0, a2->x0);
+    if (a1->y0 < 0) a1->y0 = a2->y0; else a1->y0 = std::min(a1->y0, a2->y0);
+    if (a1->x1 < 0) a1->x1 = a2->x1; else a1->x1 = std::max(a1->x1, a2->x1);
+    if (a1->y1 < 0) a1->y1 = a2->y1; else a1->y1 = std::max(a1->y1, a2->y1);
 }
 
 Widget::Widget (CTK::UI* _ui) :
@@ -128,7 +128,6 @@ void Widget::expose ()
     // end of drawing
     
     cairo_destroy(cr);
-    resetInvalid();
 }
 
 void Widget::invalidate (CTK::Area* a)
@@ -167,8 +166,8 @@ void Widget::setInvalidClip (cairo_t* cr)
 {
     int x0 = std::max(invalid.x0, 0);
     int y0 = std::max(invalid.y0, 0);
-    int x1 = std::max(invalid.x1, ws);
-    int y1 = std::max(invalid.y1, hs);
+    int x1 = std::min(invalid.x1, ws);
+    int y1 = std::min(invalid.y1, hs);
     if (DEBUG) printf (WIDGET_DEBUG_H " setInvalidClip x0:%d y0:%d x1:%d y1:%d\n", id, x0, y0, x1, y1);
     cairo_rectangle(cr, x0, y0, x1-x0, y1-y0);
     cairo_clip(cr);
@@ -177,10 +176,10 @@ void Widget::setInvalidClip (cairo_t* cr)
 void Widget::resetInvalid ()
 {
     if (DEBUG) printf(WIDGET_DEBUG_H " resetInvalid\n", id);
-    invalid.x0 = 0;
-    invalid.y0 = 0;
-    invalid.x1 = 0;
-    invalid.y1 = 0;
+    invalid.x0 = -1;
+    invalid.y0 = -1;
+    invalid.x1 = -1;
+    invalid.y1 = -1;
 }
 void Widget::expandInvalid ()
 {
