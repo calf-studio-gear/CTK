@@ -78,28 +78,21 @@ void UI::recalc ()
 void UI::expose ()
 {
     if (DEBUG) printf(UI_DEBUG_H " expose x0:%d y0:%d x1:%d y1:%d\n", id, invalid.x0, invalid.y0, invalid.x1, invalid.y1);
-    
     Container::expose();
-    
     resetInvalid();
 }
 
 void UI::addToQueue (CTK::Widget* w)
 {
     if (DEBUG) printf(COL_YELLOW "UI #%d" COL_0 " addToQueue id:%d\n", id, w->id);
-    
-    // remove already queued
+
     for (std::list<CTK::Widget*>::iterator it = queue.begin(); it != queue.end(); it++) {
         if (*it == w) {
             it = queue.erase(it);
             break;
         }
     }
-    
-    // push widget to queue
     queue.push_back(w);
-    
-    // push parent to queue
     if (w->parent) {
         Area a;
         a.x0 = w->xs + w->invalid.x0;
@@ -128,24 +121,6 @@ void UI::handleExpose(const PuglEventExpose event)
     if (DEBUG) printf("\n");
     
     cairo_t* cr = (cairo_t*)puglGetContext(event.view);
-    
-    // create clip region
-    //int _x0 = ws;
-    //int _y0 = hs;
-    //int _x1 = 0;
-    //int _y1 = 0;
-    //for (unsigned int i = 0; i < queue.size(); i++) {
-        //CTK::Widget* w = queue[i];
-        //_x0 = std::min(_x0, w->xsa);
-        //_y0 = std::min(_y0, w->ysa);
-        //_x1 = std::max(_x1, w->xsa + w->ws);
-        //_y1 = std::max(_y1, w->ysa + w->hs);
-    //}
-    //int _w = _x1 - _x0;
-    //int _h = _y1 - _y0;
-    
-    //cairo_rectangle(cr, _x0, _y0, _w, _h);
-    //cairo_clip(cr);
     
     for (std::list<CTK::Widget*>::iterator i = queue.begin(); i != queue.end();) {
         (*i)->expose();
