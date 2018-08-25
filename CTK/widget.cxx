@@ -44,7 +44,8 @@ Widget::Widget (CTK::UI* _ui) :
     scale(1.0),
     surface(0),
     parent(0),
-    id(counter++)
+    id(counter++),
+    invalid({-1,-1,-1,-1})
 {
     if (DEBUG) printf("%sConstruct Widget #%d%s\n", COL_RED, id, COL_0);
     resetInvalid();
@@ -66,7 +67,11 @@ int Widget::event (const PuglEvent* event)
 void Widget::resize ()
 {
     if (DEBUG) printf(WIDGET_DEBUG_H " resize\n", id);
+    
+    addInvalidToParent();
     calcDimensions();
+    addInvalidToParent();
+    
     if (surface) cairo_surface_destroy(surface);
     surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, ws, hs);
     
@@ -95,8 +100,9 @@ void Widget::repos (int _x, int _y)
     if (DEBUG) printf(WIDGET_DEBUG_H " repos x:%d y:%d\n", id, _x, _y);
     x = _x;
     y = _y;
-    
+    addInvalidToParent();
     calcDimensions();
+    addInvalidToParent();
 }
 
 void Widget::redraw ()
@@ -190,7 +196,19 @@ void Widget::expandInvalid ()
     invalid.y1 = hs;
 }
 
-void Widget::addInvalid (CTK::Area* a) {
+void Widget::addInvalid (CTK::Area* a)
+{
     if (DEBUG) printf(WIDGET_DEBUG_H " addInvalid\n", id);
     joinAreas(&invalid, a);
+}
+
+void Widget::addInvalidToParent ()
+{
+    if (!parent) return;
+    CTK::Area a;
+    a.x0 = xs;
+    a.y0 = ys;
+    a.x1 = xs + ws;
+    a.y1 = ys + hs;
+    parent->addInvalid(&a);
 }

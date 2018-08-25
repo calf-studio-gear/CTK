@@ -69,6 +69,7 @@ public:
     void calcDimensions();
     void setInvalidClip (cairo_t* cr);
     void addInvalid (CTK::Area* a);
+    void addInvalidToParent ();
     void resetInvalid ();
     void expandInvalid ();
 };
