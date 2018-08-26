@@ -35,7 +35,7 @@ Container::~Container ()
 
 void Container::expose ()
 {
-    if (DEBUG) printf(CONTAINER_DEBUG_H " expose x0:%d y0:%d x1:%d y1:%d\n", id, invalid.x0, invalid.y0, invalid.x1, invalid.y1);
+    if (DEBUG) printf(CONTAINER_DEBUG_H "expose x0:%d y0:%d x1:%d y1:%d\n", id, invalid.x0, invalid.y0, invalid.x1, invalid.y1);
     
     Widget::expose();
     
@@ -63,7 +63,7 @@ void Container::expose ()
 
 void Container::repos (int x, int y)
 {
-    if (DEBUG) printf(CONTAINER_DEBUG_H " repos x:%d y:%d\n", id, x, y);
+    if (DEBUG) printf(CONTAINER_DEBUG_H "repos x:%d y:%d\n", id, x, y);
     Widget::repos(x, y);
     for (unsigned int i = 0; i < children.size(); i++)
         children[i]->calcDimensions();
@@ -71,7 +71,7 @@ void Container::repos (int x, int y)
 
 void Container::rescale (float s)
 {
-    if (DEBUG) printf(CONTAINER_DEBUG_H " rescale s:%.2f\n", id, s);
+    if (DEBUG) printf(CONTAINER_DEBUG_H "rescale s:%.2f\n", id, s);
     for (unsigned int i = 0; i < children.size(); i++)
         children[i]->rescale(s);
     Widget::rescale(s);
@@ -79,7 +79,7 @@ void Container::rescale (float s)
 
 void Container::recalc ()
 {
-    if (DEBUG) printf(CONTAINER_DEBUG_H " recalc\n", id);
+    if (DEBUG) printf(CONTAINER_DEBUG_H "recalc\n", id);
     int w_ = 0;
     int h_ = 0;
     for (unsigned int i = 0; i < children.size(); i++) {
@@ -100,7 +100,7 @@ void Container::recalc ()
 
 void Container::calcDimensions()
 {
-    if (DEBUG) printf(CONTAINER_DEBUG_H " calcDimensions\n", id);
+    if (DEBUG) printf(CONTAINER_DEBUG_H "calcDimensions\n", id);
     Widget::calcDimensions();
     for (unsigned int i = 0; i < children.size(); i++)
         children[i]->calcDimensions();
@@ -109,7 +109,7 @@ void Container::calcDimensions()
 
 void Container::add (CTK::Widget* w, int x, int y, int z)
 {
-    if (DEBUG) printf(CONTAINER_DEBUG_H " add x:%d y:%d z:%d\n", id, x, y, z);
+    if (DEBUG) printf(CONTAINER_DEBUG_H "add x:%d y:%d z:%d\n", id, x, y, z);
     w->z = z;
     w->rescale(scale);
     w->repos(x, y);
@@ -131,7 +131,7 @@ void Container::add (CTK::Widget* w, int x, int y, int z)
 
 void Container::remove (CTK::Widget* w)
 {
-    if (DEBUG) printf(CONTAINER_DEBUG_H " remove id:%d\n", w->id);
+    if (DEBUG) printf(CONTAINER_DEBUG_H "remove id:%d\n", w->id);
     for (int i = 0; i < children.size(); i++) {
         if (children.at(i) == w) {
             if (w->parent)

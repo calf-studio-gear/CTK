@@ -18,6 +18,83 @@
 
 #include "demo.hxx"
 
+#include <algorithm>
+
+int clicktest (CTK::Widget *widget, const void *event, void *data) {
+    CTK::EventButton *ev = (CTK::EventButton*)event;
+    printf("clicked id:%d x:%d y:%d button:%d\n",
+        widget->id,
+        (int)ev->x,
+        (int)ev->y,
+        (int)ev->button
+    );
+    return 0;
+};
+
+int presstest (CTK::Widget *widget, const void *event, void *data) {
+    CTK::EventButton *ev = (CTK::EventButton*)event;
+    printf("pressed id:%d x:%d y:%d button:%d\n",
+        widget->id,
+        (int)ev->x,
+        (int)ev->y,
+        (int)ev->button
+    );
+    return 0;
+};
+
+int releasetest (CTK::Widget *widget, const void *event, void *data) {
+    CTK::EventButton *ev = (CTK::EventButton*)event;
+    printf("released id:%d x:%d y:%d button:%d\n",
+        widget->id,
+        (int)ev->x,
+        (int)ev->y,
+        (int)ev->button
+    );
+    return 0;
+};
+
+int dragstarttest (CTK::Widget *widget, const void *event, void *data) {
+    CTK::EventMotion *ev = (CTK::EventMotion*)event;
+    printf("dragstart id:%d x:%d y:%d\n",
+        widget->id,
+        (int)ev->x,
+        (int)ev->y
+    );
+    return 0;
+};
+
+int dragtest (CTK::Widget *widget, const void *event, void *data) {
+    CTK::EventMotion *ev = (CTK::EventMotion*)event;
+    printf("dragging id:%d x:%d y:%d\n",
+        widget->id,
+        (int)ev->x,
+        (int)ev->y
+    );
+    return 0;
+};
+
+int scrolltest (CTK::Widget *widget, const void *event, void *data) {
+    CTK::EventScroll *ev = (CTK::EventScroll*)event;
+    printf("scrolling id:%d x:%d y:%d dx:%d dy:%d\n",
+        widget->id,
+        (int)ev->x,
+        (int)ev->y,
+        (int)ev->dx,
+        (int)ev->dy
+    );
+    return 0;
+};
+
+int dragendtest (CTK::Widget *widget, const void *event, void *data) {
+    CTK::EventButton *ev = (CTK::EventButton*)event;
+    printf("dragend id:%d x:%d y:%d\n",
+        widget->id,
+        (int)ev->x,
+        (int)ev->y
+    );
+    return 0;
+};
+
 DemoUI::DemoUI (PuglNativeWindow parent, const char* _title) : CTK::UI (parent, title)
 {
     title = _title;
@@ -42,5 +119,14 @@ DemoUI::DemoUI (PuglNativeWindow parent, const char* _title) : CTK::UI (parent, 
     con1->add(box2, 10, 20, 0);
     
     rescale(2.5);
-    //rescale(5);
+    
+    box3->repos(20,20);
+    
+    box2->addEvent(CTK::EVENT_CLICK, &clicktest);
+    box2->addEvent(CTK::EVENT_BUTTON_PRESS, &presstest);
+    box2->addEvent(CTK::EVENT_BUTTON_RELEASE, &releasetest);
+    box2->addEvent(CTK::EVENT_DRAG_START, &dragstarttest);
+    box2->addEvent(CTK::EVENT_DRAG, &dragtest);
+    box2->addEvent(CTK::EVENT_DRAG_END, &dragendtest);
+    box2->addEvent(CTK::EVENT_SCROLL, &scrolltest);
 }

@@ -64,7 +64,8 @@ public:
     virtual void invalidate (CTK::Area* a);
     virtual void expose ();
     
-    virtual int event (const PuglEvent* event);
+    virtual void addEvent(CTK::EventType type, int (*callback)(CTK::Widget*, const void*, void*), void *data = NULL);
+    virtual void removeEvent(CTK::EventType type, int (*callback)(CTK::Widget*, const void*, void*));
     
     void calcDimensions();
     void setInvalidClip (cairo_t* cr);

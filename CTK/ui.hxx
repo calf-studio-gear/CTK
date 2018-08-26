@@ -55,9 +55,13 @@ public:
     
     const char* title;
     
+    virtual void addEvent(CTK::Widget *widget, CTK::EventType type, int (*callback)(CTK::Widget*, const void*, void*), void *data = NULL);
+    virtual void removeEvent(CTK::Widget *widget, CTK::EventType type, int (*callback)(CTK::Widget*, const void*, void*));
+    
 protected:
     PuglView* view;
     std::list<CTK::Widget*> queue;
+    std::list<CTK::EventMeta*> events[CTK::EVENT_TYPE_SIZE];
     
     bool quit;
     
@@ -70,12 +74,12 @@ protected:
 
     void handleExpose (const PuglEventExpose _event);
     void handleConfigure (const PuglEventConfigure _event);
-    void handleEvent (const PuglEvent* event);
-    void internalEvent (const PuglEvent* event);
+    void handleEvent (const CTK::Event* event);
+    void internalEvent (const CTK::Event* event);
     
     static void onEvent (PuglView* _view, const PuglEvent* _event) {
         UI* ui = (UI*)puglGetHandle(_view);
-        ui->handleEvent(_event);
+        ui->handleEvent((CTK::Event*)_event);
     }
     
     void requestExpose () { if (view) puglPostRedisplay(view); }
