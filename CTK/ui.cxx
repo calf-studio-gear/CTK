@@ -52,6 +52,7 @@ UI::UI(PuglNativeWindow parent, const char* _title) : Container(this),
 UI::~UI ()
 {
     puglDestroy(view);
+    queue.clear();
 }
 
 int UI::idle ()
@@ -252,18 +253,6 @@ void UI::handleEvent (const CTK::Event* event)
                 meta->buttons &= ~bmask;
                 i++;
             }
-            /* handle click event subscriptions */
-            items = events[CTK::EVENT_CLICK];
-            i = items.begin();
-            while (i != items.end()) {
-                meta = *i;
-                if (hitTest(meta->widget, event->button.x, event->button.y)
-                and meta->buttons & bmask) {
-                    meta->callback(meta->widget, &event->button, meta->data);
-                }
-                meta->buttons &= ~bmask;
-                i++;
-            }
             /* reset/handle drag event subscriptions */
             if (event->button.button == 1) {
                 items = events[CTK::EVENT_DRAG_START];
@@ -293,6 +282,18 @@ void UI::handleEvent (const CTK::Event* event)
                     meta->buttons &= ~bmask;
                     i++;
                 }
+            }
+            /* handle click event subscriptions */
+            items = events[CTK::EVENT_CLICK];
+            i = items.begin();
+            while (i != items.end()) {
+                meta = *i;
+                if (hitTest(meta->widget, event->button.x, event->button.y)
+                and meta->buttons & bmask) {
+                    meta->callback(meta->widget, &event->button, meta->data);
+                }
+                meta->buttons &= ~bmask;
+                i++;
             }
         } break;
         case CTK::EVENT_MOTION_NOTIFY: {
