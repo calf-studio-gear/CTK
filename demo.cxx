@@ -104,6 +104,8 @@ DemoUI::DemoUI (PuglNativeWindow parent, const char* _title) : CTK::UI (parent, 
 {
     title = _title;
     
+    /* test stacking and nesting */
+    
     // id 1
     CTK::Widget* box3 = new CTK::Widget(this);
     box3->resize(50, 10);
@@ -123,9 +125,16 @@ DemoUI::DemoUI (PuglNativeWindow parent, const char* _title) : CTK::UI (parent, 
     box2->resize(40, 80);
     con1->add(box2, 10, 20, 0);
     
+    
+    /* test rescale */
+    
     rescale(2.5);
     
+    /* test repositioning */
+    
     box3->repos(20,20);
+    
+    /* test generic events */
     
     box2->addEvent(CTK::EVENT_CLICK, &clicktest);
     box2->addEvent(CTK::EVENT_BUTTON_PRESS, &presstest);
@@ -135,8 +144,15 @@ DemoUI::DemoUI (PuglNativeWindow parent, const char* _title) : CTK::UI (parent, 
     box2->addEvent(CTK::EVENT_DRAG_END, &dragendtest);
     box2->addEvent(CTK::EVENT_SCROLL, &scrolltest);
     
+    /* test generic events order of being fired */
+    
     box3->addEvent(CTK::EVENT_CLICK, &clicktest);
     box1->addEvent(CTK::EVENT_CLICK, &clicktest);
     
+    /* test custom events */
+    
     box2->addEvent(CTK::EVENT_TOGGLED, &toggletest);
+    box2->fireEvent(CTK::EVENT_TOGGLED);
+    box2->removeEvent(CTK::EVENT_TOGGLED, &toggletest);
+    box2->fireEvent(CTK::EVENT_TOGGLED);
 }
