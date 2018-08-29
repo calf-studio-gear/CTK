@@ -184,7 +184,7 @@ void UI::handleEvent (const CTK::Event* event)
     switch (event->type) {
         case CTK::EVENT_BUTTON_PRESS: {
             int bmask = (1 << event->button.button-1);
-            /* handle button press subscriptions */
+            /* button press */
             items = events[CTK::EVENT_BUTTON_PRESS];
             i = items.begin();
             while (i != items.end()) {
@@ -195,7 +195,7 @@ void UI::handleEvent (const CTK::Event* event)
                 }
                 i++;
             }
-            /* handle click event subscriptions */
+            /* click */
             items = events[CTK::EVENT_CLICK];
             i = items.begin();
             while (i != items.end()) {
@@ -217,7 +217,7 @@ void UI::handleEvent (const CTK::Event* event)
                     i++;
                 }
             }
-            /* handle drag start event subscriptions */
+            /* drag start */
             if (event->button.button == 1) {
                 items = events[CTK::EVENT_DRAG_START];
                 i = items.begin();
@@ -229,7 +229,7 @@ void UI::handleEvent (const CTK::Event* event)
                     i++;
                 }
             }
-            /* handle drag start event subscriptions */
+            /* drag end */
             if (event->button.button == 1) {
                 items = events[CTK::EVENT_DRAG_END];
                 i = items.begin();
@@ -244,7 +244,7 @@ void UI::handleEvent (const CTK::Event* event)
         } break;
         case CTK::EVENT_BUTTON_RELEASE: {
             int bmask = (1 << event->button.button-1);
-            /* handle button release subscriptions */
+            /* button release */
             items = events[CTK::EVENT_BUTTON_RELEASE];
             i = items.begin();
             while (i != items.end()) {
@@ -255,7 +255,7 @@ void UI::handleEvent (const CTK::Event* event)
                 meta->buttons &= ~bmask;
                 i++;
             }
-            /* reset/handle drag event subscriptions */
+            /* dragging */
             if (event->button.button == 1) {
                 items = events[CTK::EVENT_DRAG_START];
                 i = items.begin();
@@ -285,7 +285,7 @@ void UI::handleEvent (const CTK::Event* event)
                     i++;
                 }
             }
-            /* handle click event subscriptions */
+            /* click */
             items = events[CTK::EVENT_CLICK];
             i = items.begin();
             while (i != items.end()) {
@@ -299,7 +299,7 @@ void UI::handleEvent (const CTK::Event* event)
             }
         } break;
         case CTK::EVENT_MOTION_NOTIFY: {
-            /* handle drag start subscriptions */
+            /* drag start */
             items = events[CTK::EVENT_DRAG_START];
             i = items.begin();
             while (i != items.end()) {
@@ -310,7 +310,7 @@ void UI::handleEvent (const CTK::Event* event)
                 }
                 i++;
             }
-            /* handle drag subscriptions */
+            /* drag */
             items = events[CTK::EVENT_DRAG];
             i = items.begin();
             while (i != items.end()) {
@@ -320,13 +320,29 @@ void UI::handleEvent (const CTK::Event* event)
                 }
                 i++;
             }
-            /* handle drag end subscriptions */
+            /* drag end */
             items = events[CTK::EVENT_DRAG_END];
             i = items.begin();
             while (i != items.end()) {
                 meta = *i;
                 if (meta->buttons & 1 and !meta->drag) {
                     meta->drag = &event->motion;
+                }
+                i++;
+            }
+            /* hover */
+            items = events[CTK::EVENT_HOVER];
+            i = items.begin();
+            bool hover;
+            while (i != items.end()) {
+                meta = *i;
+                hover = hitTest(meta->widget, event->motion.x, event->motion.y);
+                if (!meta->hover and hover) {
+                    meta->hover = true;
+                    meta->callback(meta->widget, &meta->hover, meta->data);
+                } else if (meta->hover and !hover) {
+                    meta->hover = false;
+                    meta->callback(meta->widget, &meta->hover, meta->data);
                 }
                 i++;
             }
@@ -405,6 +421,7 @@ void UI::addEvent (CTK::Widget *widget, CTK::EventType type, int (*callback)(CTK
     em->data = data;
     em->buttons = 0;
     em->drag = NULL;
+    em->hover = false;
     em->zDepth = widget->getZDepth();
     
     events[type].push_back(em);

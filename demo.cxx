@@ -95,6 +95,13 @@ int dragendtest (CTK::Widget *widget, const void *event, void *data) {
     return 0;
 };
 
+int hovertest (CTK::Widget *widget, const void *hover, void *data) {
+    bool *h = (bool*)hover;
+    printf("hover id:%d state:%d\n", widget->id, (int)*h);
+    return 0;
+};
+
+
 int toggletest (CTK::Widget *widget, void *data) {
     printf("toggled id:%d\n", widget->id);
     return 0;
@@ -136,15 +143,21 @@ DemoUI::DemoUI (PuglNativeWindow parent, const char* _title) : CTK::UI (parent, 
     
     /* test generic events */
     
-    box2->addEvent(CTK::EVENT_CLICK, &clicktest);
     box2->addEvent(CTK::EVENT_BUTTON_PRESS, &presstest);
     box2->addEvent(CTK::EVENT_BUTTON_RELEASE, &releasetest);
+    box2->addEvent(CTK::EVENT_SCROLL, &scrolltest);
+    
+    /* test abstract events */
+    
+    box2->addEvent(CTK::EVENT_CLICK, &clicktest);
+    
+    box3->addEvent(CTK::EVENT_HOVER, &hovertest);
+    
     box2->addEvent(CTK::EVENT_DRAG_START, &dragstarttest);
     box2->addEvent(CTK::EVENT_DRAG, &dragtest);
     box2->addEvent(CTK::EVENT_DRAG_END, &dragendtest);
-    box2->addEvent(CTK::EVENT_SCROLL, &scrolltest);
     
-    /* test generic events order of being fired */
+    /* test events order of being fired */
     
     box3->addEvent(CTK::EVENT_CLICK, &clicktest);
     box1->addEvent(CTK::EVENT_CLICK, &clicktest);

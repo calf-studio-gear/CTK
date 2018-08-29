@@ -124,6 +124,7 @@ typedef struct : BasicEventMeta {
     std::list<CTK::ZDepth> zDepth;
     unsigned int buttons;
     const void *drag;
+    bool hover;
 } GenericEventMeta;
 
 typedef enum {
@@ -185,15 +186,14 @@ typedef enum {
     EVENT_FOCUS_OUT,            /**< Keyboard focus left view */
     /* abstract */
     EVENT_CLICK,
-    EVENT_ENTER,
-    EVENT_LEAVE,
+    EVENT_HOVER,
     EVENT_DRAG_START,
     EVENT_DRAG,
     EVENT_DRAG_END,
     /* custom */
     EVENT_TOGGLED,
 } EventType;
-const int GENERIC_EVENT_TYPE_SIZE = 20;
+const int GENERIC_EVENT_TYPE_SIZE = 19;
 
 struct EventAny : PuglEventAny { };
 struct EventButton : PuglEventButton { };
