@@ -177,9 +177,9 @@ void UI::handleEvent (const CTK::Event* event)
     if (DEBUG_EVENT > 1) printf(UI_DEBUG_H "handleEvent type:%d\n", id, event->type);
     int ret;
     internalEvent(event);
-    std::list<CTK::EventMeta*> items;
-    std::list<CTK::EventMeta*>::iterator i;
-    CTK::EventMeta* meta;
+    std::list<CTK::GenericEventMeta*> items;
+    std::list<CTK::GenericEventMeta*>::iterator i;
+    CTK::GenericEventMeta* meta;
     
     switch (event->type) {
         case CTK::EVENT_BUTTON_PRESS: {
@@ -367,7 +367,7 @@ void UI::internalEvent (const CTK::Event* event)
     }
 }
 
-bool compareZDepth (CTK::EventMeta *a, CTK::EventMeta *b)
+bool compareZDepth (CTK::GenericEventMeta *a, CTK::GenericEventMeta *b)
 {
     /* sort callback. returns true if first arg is before second one */
     
@@ -393,25 +393,12 @@ bool compareZDepth (CTK::EventMeta *a, CTK::EventMeta *b)
     return false;
 }
 
-void UI::sortEvents (CTK::EventType type)
-{
-    if (DEBUG_EVENT) printf(UI_DEBUG_H "sortEvents type:%d\n", id, type);
-    int t = (int)type;
-    events[t].sort(compareZDepth);
-    std::list<CTK::EventMeta*>::iterator i = events[t].begin();
-    while (i != events[t].end()) {
-        i++;
-    }
-}
-
 void UI::addEvent (CTK::Widget *widget, CTK::EventType type, int (*callback)(CTK::Widget*, const void*, void*), void *data)
 {
-    int t = (int)type;
     int comp;
-    if (DEBUG_EVENT) printf(UI_DEBUG_H "addEvent id:%d type:%d\n", id, widget->id, t);
-    CTK::EventMeta *_em;
-    CTK::EventMeta *em = new CTK::EventMeta();
-    std::list<CTK::EventMeta*>::iterator i = events[t].begin();
+    if (DEBUG_EVENT) printf(UI_DEBUG_H "addEvent id:%d type:%d\n", id, widget->id, type);
+    CTK::GenericEventMeta *em = new CTK::GenericEventMeta();
+    std::list<CTK::GenericEventMeta*>::iterator i = events[type].begin();
     
     em->widget = widget;
     em->callback = callback;
@@ -420,22 +407,20 @@ void UI::addEvent (CTK::Widget *widget, CTK::EventType type, int (*callback)(CTK
     em->drag = NULL;
     em->zDepth = widget->getZDepth();
     
-    events[t].push_back(em);
-    
-    sortEvents(type);
+    events[type].push_back(em);
+    events[type].sort(compareZDepth);
 }
 
 void UI::removeEvent (CTK::Widget *widget, CTK::EventType type, int (*callback)(CTK::Widget*, const void*, void*))
 {
-    int t = (int)type;
-    if (DEBUG_EVENT) printf(UI_DEBUG_H "removeEvent id:%d type:%d\n", id, widget->id, t);
-    CTK::EventMeta *em;
-    std::list<CTK::EventMeta*>::iterator i = events[t].begin();
-    while (i != events[t].end()) {
+    if (DEBUG_EVENT) printf(UI_DEBUG_H "removeEvent id:%d type:%d\n", id, widget->id, type);
+    CTK::GenericEventMeta *em;
+    std::list<CTK::GenericEventMeta*>::iterator i = events[type].begin();
+    while (i != events[type].end()) {
         em = *i;
         if (em->widget == widget and em->callback == callback) {
             delete em;
-            i = events[t].erase(i);
+            i = events[type].erase(i);
         } else {
             ++i;
         }

@@ -95,6 +95,11 @@ int dragendtest (CTK::Widget *widget, const void *event, void *data) {
     return 0;
 };
 
+int toggletest (CTK::Widget *widget, void *data) {
+    printf("toggled id:%d\n", widget->id);
+    return 0;
+};
+
 DemoUI::DemoUI (PuglNativeWindow parent, const char* _title) : CTK::UI (parent, title)
 {
     title = _title;
@@ -132,4 +137,6 @@ DemoUI::DemoUI (PuglNativeWindow parent, const char* _title) : CTK::UI (parent, 
     
     box3->addEvent(CTK::EVENT_CLICK, &clicktest);
     box1->addEvent(CTK::EVENT_CLICK, &clicktest);
+    
+    box2->addEvent(CTK::EVENT_TOGGLED, &toggletest);
 }

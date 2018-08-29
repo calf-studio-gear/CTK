@@ -19,6 +19,7 @@
 #include <cairo/cairo.h>
 #include <ctime>
 #include <list>
+#include <map>
 
 #include "typedef.hxx"
 #include "widget.hxx"
@@ -213,13 +214,64 @@ void Widget::addInvalidToParent ()
 
 void Widget::addEvent(CTK::EventType type, int (*callback)(CTK::Widget*, const void*, void*), void *data)
 {
-    ui->addEvent(this, type, callback, data);
+    if (type < CTK::GENERIC_EVENT_TYPE_SIZE) {
+        ui->addEvent(this, type, callback, data);
+        return;
+    }
 };
 
 void Widget::removeEvent(CTK::EventType type, int (*callback)(CTK::Widget*, const void*, void*))
 {
-    ui->removeEvent(this, type, callback);
+    if ((int)type < CTK::GENERIC_EVENT_TYPE_SIZE) {
+        ui->removeEvent(this, type, callback);
+        return;
+    }
 };
+
+void Widget::addEvent(CTK::EventType type, int (*callback)(CTK::Widget*, void*), void *data)
+{
+    if (DEBUG_EVENT) printf(WIDGET_DEBUG_H "addEvent type:%d\n", id, type);
+
+    if (!events[type].size())
+        events[type] = {};
+        
+    CTK::BasicEventMeta *em = new CTK::BasicEventMeta();
+    
+    em->widget = this;
+    em->callback = callback;
+    em->data = data;
+    
+    events[type].push_back(em);
+};
+
+void Widget::removeEvent(CTK::EventType type, int (*callback)(CTK::Widget*, void*))
+{
+    if (DEBUG_EVENT) printf(WIDGET_DEBUG_H "removeEvent type:%d\n", id, type);
+    if (!events[type].size())
+        return;
+    CTK::BasicEventMeta *em;
+    std::list<CTK::BasicEventMeta*>::iterator i = events[type].begin();
+    while (i != events[type].end()) {
+        em = *i;
+        if (em->widget == this and em->callback == callback) {
+            delete em;
+            i = events[type].erase(i);
+        } else {
+            ++i;
+        }
+    }
+};
+
+void Widget::fireEvent(CTK::EventType type)
+{
+    if (events[type].size()) {
+        std::list<CTK::BasicEventMeta*>::iterator i = events[type].begin();
+        while (i != events[type].end()) {
+            (*i)->callback(this, (*i)->data);
+            i++;
+        }
+    }
+}
 
 std::list<CTK::ZDepth> Widget::getZDepth ()
 {

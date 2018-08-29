@@ -115,12 +115,16 @@ typedef struct {
 
 typedef struct {
     CTK::Widget *widget;
-    std::list<CTK::ZDepth> zDepth;
-    int (*callback)(CTK::Widget*, const void*, void*);
+    int (*callback)(CTK::Widget*, void*);
     void *data;
+} BasicEventMeta;
+
+typedef struct : BasicEventMeta {
+    int (*callback)(CTK::Widget*, const void*, void*);
+    std::list<CTK::ZDepth> zDepth;
     unsigned int buttons;
     const void *drag;
-} EventMeta;
+} GenericEventMeta;
 
 typedef enum {
     CHAR_BACKSPACE = 0x08,
@@ -164,6 +168,7 @@ typedef enum {
 } Key;
 
 typedef enum {
+    /* generics */
     EVENT_NOTHING = 0,          /**< No event */
     EVENT_BUTTON_PRESS,         /**< Mouse button press */
     EVENT_BUTTON_RELEASE,       /**< Mouse button release */
@@ -178,14 +183,17 @@ typedef enum {
     EVENT_SCROLL,               /**< Scroll */
     EVENT_FOCUS_IN,             /**< Keyboard focus entered view */
     EVENT_FOCUS_OUT,            /**< Keyboard focus left view */
+    /* abstract */
     EVENT_CLICK,
     EVENT_ENTER,
     EVENT_LEAVE,
     EVENT_DRAG_START,
     EVENT_DRAG,
     EVENT_DRAG_END,
+    /* custom */
+    EVENT_TOGGLED,
 } EventType;
-const int EVENT_TYPE_SIZE = 20;
+const int GENERIC_EVENT_TYPE_SIZE = 20;
 
 struct EventAny : PuglEventAny { };
 struct EventButton : PuglEventButton { };

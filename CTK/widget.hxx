@@ -26,6 +26,7 @@
 #include <stdlib.h>
 #include <string>
 #include <list>
+#include <map>
 
 #include "typedef.hxx"
 
@@ -67,6 +68,11 @@ public:
     
     virtual void addEvent(CTK::EventType type, int (*callback)(CTK::Widget*, const void*, void*), void *data = NULL);
     virtual void removeEvent(CTK::EventType type, int (*callback)(CTK::Widget*, const void*, void*));
+    
+    virtual void addEvent(CTK::EventType type, int (*callback)(CTK::Widget*, void*), void *data = NULL);
+    virtual void removeEvent(CTK::EventType type, int (*callback)(CTK::Widget*, void*));
+    virtual void fireEvent(CTK::EventType type);
+    
     std::list<CTK::ZDepth> getZDepth ();
     
     void calcDimensions();
@@ -76,7 +82,7 @@ public:
     void resetInvalid ();
     void expandInvalid ();
 protected:
-    std::list<CTK::EventMeta*> events[CTK::EVENT_TYPE_SIZE];
+    std::map<uint, std::list<CTK::BasicEventMeta*>> events;
 };
 
 };
