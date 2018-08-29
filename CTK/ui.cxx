@@ -28,7 +28,7 @@ using namespace CTK;
 UI::UI(PuglNativeWindow parent, const char* _title) : Container(this),
     title(_title)
 {
-    if (DEBUG) printf("%sConstruct UI #%d%s\n", COL_RED, id, COL_0);
+    if (DEBUG_MAIN) printf("%sConstruct UI #%d%s\n", COL_RED, id, COL_0);
     w = 1;
     h = 1;
     
@@ -51,6 +51,7 @@ UI::UI(PuglNativeWindow parent, const char* _title) : Container(this),
 
 UI::~UI ()
 {
+    if (DEBUG_MAIN) printf("%sDeconstruct UI #%d%s\n", COL_RED, id, COL_0);
     puglDestroy(view);
     queue.clear();
 }
@@ -73,35 +74,35 @@ int UI::run ()
 
 void UI::rescale (float s)
 {
-    if (DEBUG) printf(UI_DEBUG_H "rescale s:%.2f\n", id, s);
+    if (DEBUG_LAYOUT) printf(UI_DEBUG_H "rescale s:%.2f\n", id, s);
     Container::rescale(s);
     resizeWindow(view, ws, hs);
 }
 
 void UI::resize ()
 {
-    if (DEBUG) printf(UI_DEBUG_H "resize\n", id);
+    if (DEBUG_LAYOUT) printf(UI_DEBUG_H "resize\n", id);
     Container::resize();
     resizeWindow(view, ws, hs);
 }
 
 void UI::recalc ()
 {
-    if (DEBUG) printf(UI_DEBUG_H "recalc\n", id);
+    if (DEBUG_LAYOUT) printf(UI_DEBUG_H "recalc\n", id);
     Container::recalc();
     resizeWindow(view, ws, hs);
 }
 
 void UI::expose ()
 {
-    if (DEBUG) printf(UI_DEBUG_H "expose x0:%d y0:%d x1:%d y1:%d\n", id, invalid.x0, invalid.y0, invalid.x1, invalid.y1);
+    if (DEBUG_DRAW) printf(UI_DEBUG_H "expose x0:%d y0:%d x1:%d y1:%d\n", id, invalid.x0, invalid.y0, invalid.x1, invalid.y1);
     Container::expose();
     resetInvalid();
 }
 
 void UI::resizeWindow (PuglView* view, int w, int h)
 {
-    if (DEBUG) printf(UI_DEBUG_H "resizeWindow w:%d h:%d\n", id, w, h);
+    if (DEBUG_LAYOUT) printf(UI_DEBUG_H "resizeWindow w:%d h:%d\n", id, w, h);
     puglInitWindowMinSize(view, w, h);
     puglInitWindowSize(view, w, h);
     puglConfigureWindow(view);
@@ -109,7 +110,7 @@ void UI::resizeWindow (PuglView* view, int w, int h)
 
 void UI::addToQueue (CTK::Widget* w)
 {
-    if (DEBUG) printf(COL_YELLOW "UI #%d" COL_0 " addToQueue id:%d\n", id, w->id);
+    if (DEBUG_DRAW) printf(COL_YELLOW "UI #%d" COL_0 " addToQueue id:%d\n", id, w->id);
 
     for (std::list<CTK::Widget*>::iterator it = queue.begin(); it != queue.end(); it++) {
         if (*it == w) {
@@ -130,7 +131,7 @@ void UI::addToQueue (CTK::Widget* w)
 
 void UI::requestExpose(CTK::Widget* w)
 {
-    if (DEBUG) printf(UI_DEBUG_H "requestExpose id:%d\n", id, w->id);
+    if (DEBUG_DRAW) printf(UI_DEBUG_H "requestExpose id:%d\n", id, w->id);
     addToQueue(w);
     if (view)
         puglPostRedisplay(view);
@@ -138,12 +139,12 @@ void UI::requestExpose(CTK::Widget* w)
 
 void UI::handleExpose(const PuglEventExpose event)
 {
-    if (DEBUG) printf(UI_DEBUG_H COL_YELLOW "handleExpose" COL_0 " x:%d y:%d w:%d h:%d\n", id, (int)event.x, (int)event.y, (int)event.width, (int)event.height);
+    if (DEBUG_DRAW) printf(UI_DEBUG_H COL_YELLOW "handleExpose" COL_0 " x:%d y:%d w:%d h:%d\n", id, (int)event.x, (int)event.y, (int)event.width, (int)event.height);
     
-    if (DEBUG) printf("    IDs:");
+    if (DEBUG_DRAW) printf("    IDs:");
     for (std::list<CTK::Widget*>::iterator i = queue.begin(); i != queue.end(); i++)
-        if (DEBUG) std::cout << ' ' << (*i)->id;
-    if (DEBUG) printf("\n");
+        if (DEBUG_DRAW) std::cout << ' ' << (*i)->id;
+    if (DEBUG_DRAW) printf("\n");
     
     cairo_t* cr = (cairo_t*)puglGetContext(event.view);
     
@@ -173,6 +174,7 @@ bool hitTest (CTK::Widget *w, int x, int y) {
 
 void UI::handleEvent (const CTK::Event* event)
 {
+    if (DEBUG_EVENT > 1) printf(UI_DEBUG_H "handleEvent type:%d\n", id, event->type);
     int ret;
     internalEvent(event);
     std::list<CTK::EventMeta*> items;
@@ -365,30 +367,75 @@ void UI::internalEvent (const CTK::Event* event)
     }
 }
 
+bool compareZDepth (CTK::EventMeta *a, CTK::EventMeta *b)
+{
+    /* sort callback. returns true if first arg is before second one */
+    
+    std::list<CTK::ZDepth>::iterator ia = a->zDepth.begin();
+    std::list<CTK::ZDepth>::iterator ib = b->zDepth.begin();
+    
+    while (ia != a->zDepth.end() and ib != b->zDepth.end()) {
+        if ((*ia).z > (*ib).z) {
+            return true;
+        }
+        if ((*ia).z == (*ib).z) {
+            if ((*ia).i > (*ib).i) {
+                return true;
+            }
+            if ((*ia).i == (*ib).i) {
+                ia++;
+                ib++;
+                continue;
+            }
+        }
+        return false;
+    }
+    return false;
+}
+
+void UI::sortEvents (CTK::EventType type)
+{
+    if (DEBUG_EVENT) printf(UI_DEBUG_H "sortEvents type:%d\n", id, type);
+    int t = (int)type;
+    events[t].sort(compareZDepth);
+    std::list<CTK::EventMeta*>::iterator i = events[t].begin();
+    while (i != events[t].end()) {
+        i++;
+    }
+}
+
 void UI::addEvent (CTK::Widget *widget, CTK::EventType type, int (*callback)(CTK::Widget*, const void*, void*), void *data)
 {
     int t = (int)type;
-    if (DEBUG) printf(UI_DEBUG_H "addEvent id:%d type:%d\n", id, widget->id, t);
+    int comp;
+    if (DEBUG_EVENT) printf(UI_DEBUG_H "addEvent id:%d type:%d\n", id, widget->id, t);
+    CTK::EventMeta *_em;
     CTK::EventMeta *em = new CTK::EventMeta();
+    std::list<CTK::EventMeta*>::iterator i = events[t].begin();
+    
     em->widget = widget;
     em->callback = callback;
     em->data = data;
     em->buttons = 0;
     em->drag = NULL;
+    em->zDepth = widget->getZDepth();
+    
     events[t].push_back(em);
+    
+    sortEvents(type);
 }
 
 void UI::removeEvent (CTK::Widget *widget, CTK::EventType type, int (*callback)(CTK::Widget*, const void*, void*))
 {
     int t = (int)type;
-    if (DEBUG) printf(UI_DEBUG_H "removeEvent id:%d type:%d\n", id, widget->id, t);
-    std::list<CTK::EventMeta*> items = events[t];
-    std::list<CTK::EventMeta*>::iterator i = items.begin();
-    while (i != items.end()) {
-        CTK::EventMeta *em = *i;
+    if (DEBUG_EVENT) printf(UI_DEBUG_H "removeEvent id:%d type:%d\n", id, widget->id, t);
+    CTK::EventMeta *em;
+    std::list<CTK::EventMeta*>::iterator i = events[t].begin();
+    while (i != events[t].end()) {
+        em = *i;
         if (em->widget == widget and em->callback == callback) {
             delete em;
-            i = items.erase(i);
+            i = events[t].erase(i);
         } else {
             ++i;
         }

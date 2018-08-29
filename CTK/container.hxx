@@ -49,6 +49,8 @@ public:
     virtual void expose ();
     
     virtual void calcDimensions();
+    
+    CTK::ZDepth getZDepth (CTK::Widget *w);
 };
 
 };

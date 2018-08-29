@@ -24,7 +24,6 @@
 #include <cairo/cairo.h>
 #include <unistd.h>
 #include <stdio.h>
-#include <stack>
 #include <list>
 
 #include "container.hxx"
@@ -57,11 +56,11 @@ public:
     
     virtual void addEvent(CTK::Widget *widget, CTK::EventType type, int (*callback)(CTK::Widget*, const void*, void*), void *data = NULL);
     virtual void removeEvent(CTK::Widget *widget, CTK::EventType type, int (*callback)(CTK::Widget*, const void*, void*));
+    void sortEvents (CTK::EventType type);
     
 protected:
     PuglView* view;
     std::list<CTK::Widget*> queue;
-    std::list<CTK::EventMeta*> events[CTK::EVENT_TYPE_SIZE];
     
     bool quit;
     

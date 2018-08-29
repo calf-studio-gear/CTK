@@ -25,6 +25,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string>
+#include <list>
 
 #include "typedef.hxx"
 
@@ -42,7 +43,7 @@ public:
     int y, ys, ya, ysa;
     int w, ws;
     int h, hs;
-    int z;
+    uint16_t z;
     int id;
     float scale;
     bool visible;
@@ -66,6 +67,7 @@ public:
     
     virtual void addEvent(CTK::EventType type, int (*callback)(CTK::Widget*, const void*, void*), void *data = NULL);
     virtual void removeEvent(CTK::EventType type, int (*callback)(CTK::Widget*, const void*, void*));
+    std::list<CTK::ZDepth> getZDepth ();
     
     void calcDimensions();
     void setInvalidClip (cairo_t* cr);
@@ -73,6 +75,8 @@ public:
     void addInvalidToParent ();
     void resetInvalid ();
     void expandInvalid ();
+protected:
+    std::list<CTK::EventMeta*> events[CTK::EVENT_TYPE_SIZE];
 };
 
 };

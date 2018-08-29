@@ -20,7 +20,13 @@
 #define TYPEDEF_HXX
 
 #include <string>
+#include <list>
 #include <pugl/pugl.h>
+
+#define DEBUG_MAIN 0
+#define DEBUG_DRAW 0
+#define DEBUG_EVENT 1
+#define DEBUG_LAYOUT 0
 
 #define COL_0 "\033[0m"
 #define COL_BLACK "\033[22;30m"
@@ -43,8 +49,6 @@
 #define UI_DEBUG_H COL_YELLOW "UI #%d " COL_0
 #define WIDGET_DEBUG_H COL_PINK "Widget #%d " COL_0
 #define CONTAINER_DEBUG_H COL_CYAN "Container #%d " COL_0
-
-#define DEBUG 1
 
 namespace CTK {
 
@@ -105,7 +109,13 @@ typedef struct
 
 
 typedef struct {
+    uint32_t z;
+    uint32_t i;
+} ZDepth;
+
+typedef struct {
     CTK::Widget *widget;
+    std::list<CTK::ZDepth> zDepth;
     int (*callback)(CTK::Widget*, const void*, void*);
     void *data;
     unsigned int buttons;

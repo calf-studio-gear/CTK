@@ -25,17 +25,18 @@ using namespace CTK;
 
 Container::Container (CTK::UI* ui) : CTK::Widget (ui)
 {
-    if (DEBUG) printf("%sConstruct Container #%d%s\n", COL_RED, id, COL_0);
+    if (DEBUG_MAIN) printf("%sConstruct Container #%d%s\n", COL_RED, id, COL_0);
 }
 
 Container::~Container ()
 {
+    if (DEBUG_MAIN) printf("%sDeconstruct Container #%d%s\n", COL_RED, id, COL_0);
     children.clear();
 }
 
 void Container::expose ()
 {
-    if (DEBUG) printf(CONTAINER_DEBUG_H "expose x0:%d y0:%d x1:%d y1:%d\n", id, invalid.x0, invalid.y0, invalid.x1, invalid.y1);
+    if (DEBUG_DRAW) printf(CONTAINER_DEBUG_H "expose x0:%d y0:%d x1:%d y1:%d\n", id, invalid.x0, invalid.y0, invalid.x1, invalid.y1);
     
     Widget::expose();
     
@@ -44,13 +45,13 @@ void Container::expose ()
     
     for (unsigned int i = 0; i < children.size(); i++) {
         CTK::Widget* w = children[i];
-        if (DEBUG) printf("    testing #%d - xs:%d ys:%d ws:%d hs:%d\n", w->id, w->xs, w->ys, w->ws, w->hs); 
+        if (DEBUG_DRAW) printf("    testing #%d - xs:%d ys:%d ws:%d hs:%d\n", w->id, w->xs, w->ys, w->ws, w->hs); 
         if (w->xs <= invalid.x0 + invalid.x1 and
             w->ys <= invalid.y0 + invalid.y1 and
             w->xs + w->ws >= invalid.x0 and
             w->ys + w->hs >= invalid.y0
         ) {
-            if (DEBUG) printf("    drawing #%d - x0:%d y0:%d x1:%d y1:%d\n", w->id, w->invalid.x0, w->invalid.y0, w->invalid.x1, w->invalid.y1);
+            if (DEBUG_DRAW) printf("    drawing #%d - x0:%d y0:%d x1:%d y1:%d\n", w->id, w->invalid.x0, w->invalid.y0, w->invalid.x1, w->invalid.y1);
             cairo_rectangle(cr, w->xs, w->ys, w->ws, w->hs);
             cairo_set_source_surface(cr, w->surface, w->xs, w->ys);
             cairo_paint(cr);
@@ -63,7 +64,7 @@ void Container::expose ()
 
 void Container::repos (int x, int y)
 {
-    if (DEBUG) printf(CONTAINER_DEBUG_H "repos x:%d y:%d\n", id, x, y);
+    if (DEBUG_LAYOUT) printf(CONTAINER_DEBUG_H "repos x:%d y:%d\n", id, x, y);
     Widget::repos(x, y);
     for (unsigned int i = 0; i < children.size(); i++)
         children[i]->calcDimensions();
@@ -71,7 +72,7 @@ void Container::repos (int x, int y)
 
 void Container::rescale (float s)
 {
-    if (DEBUG) printf(CONTAINER_DEBUG_H "rescale s:%.2f\n", id, s);
+    if (DEBUG_LAYOUT) printf(CONTAINER_DEBUG_H "rescale s:%.2f\n", id, s);
     for (unsigned int i = 0; i < children.size(); i++)
         children[i]->rescale(s);
     Widget::rescale(s);
@@ -79,7 +80,7 @@ void Container::rescale (float s)
 
 void Container::recalc ()
 {
-    if (DEBUG) printf(CONTAINER_DEBUG_H "recalc\n", id);
+    if (DEBUG_LAYOUT) printf(CONTAINER_DEBUG_H "recalc\n", id);
     int w_ = 0;
     int h_ = 0;
     for (unsigned int i = 0; i < children.size(); i++) {
@@ -90,17 +91,17 @@ void Container::recalc ()
     if (w_ != w or h_ != h)
         resize(w_, h_);
         
-    if (DEBUG) printf("    w:%d h:%d\n", w_, h_);
+    if (DEBUG_LAYOUT) printf("    w:%d h:%d\n", w_, h_);
     
     if (parent) {
-        printf("    pid:%d\n", parent->id);
+        if (DEBUG_LAYOUT) printf("    pid:%d\n", parent->id);
         parent->recalc();
     }
 }
 
 void Container::calcDimensions()
 {
-    if (DEBUG) printf(CONTAINER_DEBUG_H "calcDimensions\n", id);
+    if (DEBUG_LAYOUT) printf(CONTAINER_DEBUG_H "calcDimensions\n", id);
     Widget::calcDimensions();
     for (unsigned int i = 0; i < children.size(); i++)
         children[i]->calcDimensions();
@@ -109,7 +110,7 @@ void Container::calcDimensions()
 
 void Container::add (CTK::Widget* w, int x, int y, int z)
 {
-    if (DEBUG) printf(CONTAINER_DEBUG_H "add x:%d y:%d z:%d\n", id, x, y, z);
+    if (DEBUG_MAIN) printf(CONTAINER_DEBUG_H "add x:%d y:%d z:%d\n", id, x, y, z);
     w->z = z;
     w->rescale(scale);
     w->repos(x, y);
@@ -131,7 +132,7 @@ void Container::add (CTK::Widget* w, int x, int y, int z)
 
 void Container::remove (CTK::Widget* w)
 {
-    if (DEBUG) printf(CONTAINER_DEBUG_H "remove id:%d\n", w->id);
+    if (DEBUG_MAIN) printf(CONTAINER_DEBUG_H "remove id:%d\n", w->id);
     for (int i = 0; i < children.size(); i++) {
         if (children.at(i) == w) {
             if (w->parent)
@@ -141,4 +142,16 @@ void Container::remove (CTK::Widget* w)
         }
     }
     recalc();
+}
+
+CTK::ZDepth Container::getZDepth (CTK::Widget *w)
+{
+    uint32_t c = 0;
+    for (int i = 0; i < children.size(); i++) {
+        if (children[i] != w and children[i]->z == w->z)
+            c++;
+        if (children[i] == w)
+            break;
+    }
+    return {w->z, c};
 }

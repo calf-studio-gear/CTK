@@ -18,6 +18,7 @@
 
 #include <cairo/cairo.h>
 #include <ctime>
+#include <list>
 
 #include "typedef.hxx"
 #include "widget.hxx"
@@ -47,7 +48,7 @@ Widget::Widget (CTK::UI* _ui) :
     id(counter++),
     invalid({-1,-1,-1,-1})
 {
-    if (DEBUG) printf("%sConstruct Widget #%d%s\n", COL_RED, id, COL_0);
+    if (DEBUG_MAIN) printf("%sConstruct Widget #%d%s\n", COL_RED, id, COL_0);
     resetInvalid();
     
     if (id)
@@ -56,12 +57,13 @@ Widget::Widget (CTK::UI* _ui) :
 
 Widget::~Widget ()
 {
+    if (DEBUG_MAIN) printf("%sDeconstruct Widget #%d%s\n", COL_RED, id, COL_0);
     if (surface) cairo_surface_destroy(surface);
 }
 
 void Widget::resize ()
 {
-    if (DEBUG) printf(WIDGET_DEBUG_H "resize\n", id);
+    if (DEBUG_LAYOUT) printf(WIDGET_DEBUG_H "resize\n", id);
     
     addInvalidToParent();
     calcDimensions();
@@ -75,7 +77,7 @@ void Widget::resize ()
 }
 void Widget::resize (int _w, int _h)
 {
-    if (DEBUG) printf(WIDGET_DEBUG_H "resize w:%d h:%d\n", id, _w, _h);
+    if (DEBUG_LAYOUT) printf(WIDGET_DEBUG_H "resize w:%d h:%d\n", id, _w, _h);
     w = _w;
     h = _h;
     
@@ -84,7 +86,7 @@ void Widget::resize (int _w, int _h)
 
 void Widget::rescale (float s)
 {
-    if (DEBUG) printf(WIDGET_DEBUG_H "rescale s:%.2f\n", id, s);
+    if (DEBUG_LAYOUT) printf(WIDGET_DEBUG_H "rescale s:%.2f\n", id, s);
     scale = s;
     
     resize();
@@ -92,7 +94,7 @@ void Widget::rescale (float s)
 
 void Widget::repos (int _x, int _y)
 {
-    if (DEBUG) printf(WIDGET_DEBUG_H "repos x:%d y:%d\n", id, _x, _y);
+    if (DEBUG_LAYOUT) printf(WIDGET_DEBUG_H "repos x:%d y:%d\n", id, _x, _y);
     x = _x;
     y = _y;
     addInvalidToParent();
@@ -102,13 +104,13 @@ void Widget::repos (int _x, int _y)
 
 void Widget::redraw ()
 {
-    if (DEBUG) printf(WIDGET_DEBUG_H "redraw x0:%d y0:%d x1:%d y1:%d\n", id, invalid.x0, invalid.y0, invalid.x1, invalid.y1);
+    if (DEBUG_DRAW) printf(WIDGET_DEBUG_H "redraw x0:%d y0:%d x1:%d y1:%d\n", id, invalid.x0, invalid.y0, invalid.x1, invalid.y1);
     ui->requestExpose(this);
 }
 
 void Widget::expose ()
 {
-    if (DEBUG) printf(WIDGET_DEBUG_H "expose x0:%d y0:%d x1:%d y1:%d\n", id, invalid.x0, invalid.y0, invalid.x1, invalid.y1);
+    if (DEBUG_DRAW) printf(WIDGET_DEBUG_H "expose x0:%d y0:%d x1:%d y1:%d\n", id, invalid.x0, invalid.y0, invalid.x1, invalid.y1);
     
     cairo_t* cr = cairo_create(surface);
     setInvalidClip(cr);
@@ -155,12 +157,12 @@ void Widget::calcDimensions ()
     
     xsa = (int)ceil((float)xa * scale);
     ysa = (int)ceil((float)ya * scale);
-    if (DEBUG) printf(WIDGET_DEBUG_H "calcDimensions\n", id);
+    if (DEBUG_LAYOUT) printf(WIDGET_DEBUG_H "calcDimensions\n", id);
     
-    if (DEBUG) printf("    scale:%.2f\n", scale);
-    if (DEBUG) printf("    x:%d y:%d w:%d h:%d\n", x, y, w, h);
-    if (DEBUG) printf("    ws:%d hs:%d\n", ws, hs);
-    if (DEBUG) printf("    xs:%d ys:%d xa:%d ya:%d xsa:%d ysa:%d\n", xs, ys, xa, ya, xsa, ysa);
+    if (DEBUG_LAYOUT) printf("    scale:%.2f\n", scale);
+    if (DEBUG_LAYOUT) printf("    x:%d y:%d w:%d h:%d\n", x, y, w, h);
+    if (DEBUG_LAYOUT) printf("    ws:%d hs:%d\n", ws, hs);
+    if (DEBUG_LAYOUT) printf("    xs:%d ys:%d xa:%d ya:%d xsa:%d ysa:%d\n", xs, ys, xa, ya, xsa, ysa);
 }
 
 void Widget::setInvalidClip (cairo_t* cr)
@@ -169,14 +171,14 @@ void Widget::setInvalidClip (cairo_t* cr)
     int y0 = std::max(invalid.y0, 0);
     int x1 = std::min(invalid.x1, ws);
     int y1 = std::min(invalid.y1, hs);
-    if (DEBUG) printf (WIDGET_DEBUG_H "setInvalidClip x0:%d y0:%d x1:%d y1:%d\n", id, x0, y0, x1, y1);
+    if (DEBUG_DRAW) printf (WIDGET_DEBUG_H "setInvalidClip x0:%d y0:%d x1:%d y1:%d\n", id, x0, y0, x1, y1);
     cairo_rectangle(cr, x0, y0, x1-x0, y1-y0);
     cairo_clip(cr);
 }
 
 void Widget::resetInvalid ()
 {
-    if (DEBUG) printf(WIDGET_DEBUG_H "resetInvalid\n", id);
+    if (DEBUG_DRAW) printf(WIDGET_DEBUG_H "resetInvalid\n", id);
     invalid.x0 = -1;
     invalid.y0 = -1;
     invalid.x1 = -1;
@@ -184,7 +186,7 @@ void Widget::resetInvalid ()
 }
 void Widget::expandInvalid ()
 {
-    if (DEBUG) printf(WIDGET_DEBUG_H "expandInvalid\n", id);
+    if (DEBUG_DRAW) printf(WIDGET_DEBUG_H "expandInvalid\n", id);
     invalid.x0 = 0;
     invalid.y0 = 0;
     invalid.x1 = ws;
@@ -193,7 +195,7 @@ void Widget::expandInvalid ()
 
 void Widget::addInvalid (CTK::Area* a)
 {
-    if (DEBUG) printf(WIDGET_DEBUG_H "addInvalid x0:%d y0:%d x1:%d y1:%d\n", id, invalid.x0, invalid.y0, invalid.x1, invalid.y1);
+    if (DEBUG_DRAW) printf(WIDGET_DEBUG_H "addInvalid x0:%d y0:%d x1:%d y1:%d\n", id, invalid.x0, invalid.y0, invalid.x1, invalid.y1);
     joinAreas(&invalid, a);
 }
 
@@ -211,10 +213,26 @@ void Widget::addInvalidToParent ()
 
 void Widget::addEvent(CTK::EventType type, int (*callback)(CTK::Widget*, const void*, void*), void *data)
 {
-    this->ui->addEvent(this, type, callback, data);
+    ui->addEvent(this, type, callback, data);
 };
 
 void Widget::removeEvent(CTK::EventType type, int (*callback)(CTK::Widget*, const void*, void*))
 {
-    this->ui->removeEvent(this, type, callback);
+    ui->removeEvent(this, type, callback);
 };
+
+std::list<CTK::ZDepth> Widget::getZDepth ()
+{
+    CTK::Widget* w = 0;
+    std::list<CTK::ZDepth> l = {};
+    if (id) {
+        w = this;
+        do {
+            l.push_front(w->parent->getZDepth(w));
+            w = w->parent;
+        } while (w->parent);
+    }
+    if (DEBUG_EVENT) printf(WIDGET_DEBUG_H "getZDepth size:%d\n", w->id, l.size());
+    return l;
+};
+

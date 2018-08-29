@@ -129,4 +129,7 @@ DemoUI::DemoUI (PuglNativeWindow parent, const char* _title) : CTK::UI (parent, 
     box2->addEvent(CTK::EVENT_DRAG, &dragtest);
     box2->addEvent(CTK::EVENT_DRAG_END, &dragendtest);
     box2->addEvent(CTK::EVENT_SCROLL, &scrolltest);
+    
+    box3->addEvent(CTK::EVENT_CLICK, &clicktest);
+    box1->addEvent(CTK::EVENT_CLICK, &clicktest);
 }
