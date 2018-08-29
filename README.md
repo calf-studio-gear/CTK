@@ -8,7 +8,16 @@ in C++ under LGPL 3.0 license.
 It comes with a slightly modified pugl library for event and window handling
 and utilizes cairo graphics library for drawing.
 
+## Events
+
 CTK offers callback-based event handling per widget.
+
+Generic events are handled by the UI in dedicated queues which fire the
+events in correct order of the visibility (z value and order inside a container).
+Some abstract events like click, dragging and hovering are available.
+The widget class handles adding, removing and firing of custom events.
+
+## Rendering
 
 CTK has optimized rendering and compositing and full nesting and stacking
 capabilities. All widgets own a cairo surface they are drawing on. Container
