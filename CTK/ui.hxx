@@ -49,13 +49,12 @@ public:
     /// call this to recieve the LV2 widget handle
     PuglNativeWindow getNativeWindow () { return puglGetNativeWindow(view); }
     
-    void close () { quit = true; }
-    void requestExpose(CTK::Widget* w);
-    
     const char* title;
     
-    virtual void addEvent(CTK::Widget *widget, CTK::EventType type, int (*callback)(CTK::Widget*, const void*, void*), void *data = NULL);
-    virtual void removeEvent(CTK::Widget *widget, CTK::EventType type, int (*callback)(CTK::Widget*, const void*, void*));
+    void close () { quit = true; }
+    void requestExpose(CTK::Widget* w);
+    void addEvent(CTK::Widget *widget, CTK::EventType type, int (*callback)(CTK::Widget*, const void*, void*), void *data = NULL);
+    void removeEvent(CTK::Widget *widget, CTK::EventType type, int (*callback)(CTK::Widget*, const void*, void*));
     
 protected:
     PuglView* view;

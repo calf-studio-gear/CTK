@@ -17,6 +17,7 @@
  */
 
 #include "pugl/pugl.h"
+#include "picojson/picojson.hxx"
 
 #include <algorithm>
 #include <iostream>

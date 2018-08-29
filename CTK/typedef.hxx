@@ -25,7 +25,7 @@
 
 #define DEBUG_MAIN 0
 #define DEBUG_DRAW 0
-#define DEBUG_EVENT 1
+#define DEBUG_EVENT 0
 #define DEBUG_LAYOUT 0
 
 #define COL_0 "\033[0m"

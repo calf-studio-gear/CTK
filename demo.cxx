@@ -22,76 +22,43 @@
 
 int clicktest (CTK::Widget *widget, const void *event, void *data) {
     CTK::EventButton *ev = (CTK::EventButton*)event;
-    printf("clicked id:%d x:%d y:%d button:%d\n",
-        widget->id,
-        (int)ev->x,
-        (int)ev->y,
-        (int)ev->button
-    );
+    printf("clicked id:%d x:%d y:%d button:%d\n", widget->id, (int)ev->x, (int)ev->y, (int)ev->button);
     return 0;
 };
 
 int presstest (CTK::Widget *widget, const void *event, void *data) {
     CTK::EventButton *ev = (CTK::EventButton*)event;
-    printf("pressed id:%d x:%d y:%d button:%d\n",
-        widget->id,
-        (int)ev->x,
-        (int)ev->y,
-        (int)ev->button
-    );
+    printf("pressed id:%d x:%d y:%d button:%d\n", widget->id, (int)ev->x, (int)ev->y, (int)ev->button);
     return 0;
 };
 
 int releasetest (CTK::Widget *widget, const void *event, void *data) {
     CTK::EventButton *ev = (CTK::EventButton*)event;
-    printf("released id:%d x:%d y:%d button:%d\n",
-        widget->id,
-        (int)ev->x,
-        (int)ev->y,
-        (int)ev->button
-    );
+    printf("released id:%d x:%d y:%d button:%d\n", widget->id, (int)ev->x, (int)ev->y, (int)ev->button);
     return 0;
 };
 
 int dragstarttest (CTK::Widget *widget, const void *event, void *data) {
     CTK::EventMotion *ev = (CTK::EventMotion*)event;
-    printf("dragstart id:%d x:%d y:%d\n",
-        widget->id,
-        (int)ev->x,
-        (int)ev->y
-    );
+    printf("dragstart id:%d x:%d y:%d\n", widget->id, (int)ev->x, (int)ev->y);
     return 0;
 };
 
 int dragtest (CTK::Widget *widget, const void *event, void *data) {
     CTK::EventMotion *ev = (CTK::EventMotion*)event;
-    printf("dragging id:%d x:%d y:%d\n",
-        widget->id,
-        (int)ev->x,
-        (int)ev->y
-    );
+    printf("dragging id:%d x:%d y:%d\n", widget->id, (int)ev->x, (int)ev->y);
     return 0;
 };
 
 int scrolltest (CTK::Widget *widget, const void *event, void *data) {
     CTK::EventScroll *ev = (CTK::EventScroll*)event;
-    printf("scrolling id:%d x:%d y:%d dx:%d dy:%d\n",
-        widget->id,
-        (int)ev->x,
-        (int)ev->y,
-        (int)ev->dx,
-        (int)ev->dy
-    );
+    printf("scrolling id:%d x:%d y:%d dx:%d dy:%d\n", widget->id, (int)ev->x, (int)ev->y, (int)ev->dx, (int)ev->dy);
     return 0;
 };
 
 int dragendtest (CTK::Widget *widget, const void *event, void *data) {
     CTK::EventButton *ev = (CTK::EventButton*)event;
-    printf("dragend id:%d x:%d y:%d\n",
-        widget->id,
-        (int)ev->x,
-        (int)ev->y
-    );
+    printf("dragend id:%d x:%d y:%d\n", widget->id, (int)ev->x, (int)ev->y);
     return 0;
 };
 
@@ -100,7 +67,6 @@ int hovertest (CTK::Widget *widget, const void *hover, void *data) {
     printf("hover id:%d state:%d\n", widget->id, (int)*h);
     return 0;
 };
-
 
 int toggletest (CTK::Widget *widget, void *data) {
     printf("toggled id:%d\n", widget->id);
@@ -132,14 +98,13 @@ DemoUI::DemoUI (PuglNativeWindow parent, const char* _title) : CTK::UI (parent, 
     box2->resize(40, 80);
     con1->add(box2, 10, 20, 0);
     
+    /* test repositioning */
+    
+    box3->repos(20,20);
     
     /* test rescale */
     
     rescale(2.5);
-    
-    /* test repositioning */
-    
-    box3->repos(20,20);
     
     /* test generic events */
     

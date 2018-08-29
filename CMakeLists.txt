@@ -39,7 +39,7 @@ link_directories   ( ${X11_LIBRARY_DIRS} )
 
 SET(CMAKE_CXX_FLAGS "-msse -msse2 -mfpmath=sse -g") # -fsanitize=address
 
-FILE(GLOB src CTK/*.cxx CTK/pugl/pugl_x11.c) # CTK/picojson/picojson.hxx )
+FILE(GLOB src CTK/*.cxx CTK/pugl/pugl_x11.c CTK/picojson/picojson.hxx)
 
 ADD_LIBRARY( CTK STATIC ${src} )
 
