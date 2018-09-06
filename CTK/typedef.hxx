@@ -24,10 +24,18 @@
 #include <vector>
 #include <pugl/pugl.h>
 
+#ifndef DEBUG_MAIN
 #define DEBUG_MAIN 0
+#endif
+#ifndef DEBUG_DRAW
 #define DEBUG_DRAW 0
+#endif
+#ifndef DEBUG_EVENT
 #define DEBUG_EVENT 0
+#endif
+#ifndef DEBUG_LAYOUT
 #define DEBUG_LAYOUT 0
+#endif
 
 #define COL_0 "\033[0m"
 #define COL_BLACK "\033[22;30m"
@@ -93,7 +101,8 @@ typedef enum
     LENGTH_PERCENT
 } Length;
 
-typedef struct {
+typedef struct
+{
     float w;
     float h;
 } Dimensions;
@@ -113,20 +122,31 @@ typedef struct
     CTK::ImageSizing bg_sizing;
 } Theme;
 
+typedef enum
+{
+    RC_TYPE_
+} RessourceType;
 
+typedef struct
+{
+    CTK::RessourceType type;
+} Ressource;
 
-typedef struct {
+typedef struct
+{
     uint32_t z;
     uint32_t i;
 } ZDepth;
 
-typedef struct {
+typedef struct
+{
     CTK::Widget *widget;
     int (*callback)(CTK::Widget*, void*);
     void *data;
 } BasicEventMeta;
 
-typedef struct : BasicEventMeta {
+typedef struct : BasicEventMeta
+{
     int (*callback)(CTK::Widget*, const void*, void*);
     std::list<CTK::ZDepth> *zDepth;
     unsigned int buttons;
@@ -134,20 +154,23 @@ typedef struct : BasicEventMeta {
     bool hover;
 } GenericEventMeta;
 
-typedef enum {
+typedef enum
+{
     CHAR_BACKSPACE = 0x08,
     CHAR_ESCAPE    = 0x1B,
     CHAR_DELETE    = 0x7F
 } KeyChar;
 
-typedef enum {
+typedef enum
+{
     MOD_SHIFT = 1,       /**< Shift key */
     MOD_CTRL  = 1 << 1,  /**< Control key */
     MOD_ALT   = 1 << 2,  /**< Alt/Option key */
     SUPER = 1 << 3   /**< Mod4/Command/Windows key */
 } KeyMod;
 
-typedef enum {
+typedef enum
+{
     KEY_F1 = 0xE000,
     KEY_F2,
     KEY_F3,
@@ -175,7 +198,8 @@ typedef enum {
     KEY_SUPER
 } Key;
 
-typedef enum {
+typedef enum
+{
     /* generics */
     EVENT_NOTHING = 0,          /**< No event */
     EVENT_BUTTON_PRESS,         /**< Mouse button press */
@@ -213,7 +237,8 @@ struct EventMotion : PuglEventMotion { };
 struct EventScroll : PuglEventScroll { };
 struct EventFocus : PuglEventFocus { };
 
-typedef union {
+typedef union
+{
     CTK::EventType      type;       /**< Event type. */
     CTK::EventAny       any;        /**< Valid for all event types. */
     CTK::EventButton    button;     /**< PUGL_BUTTON_PRESS, PUGL_BUTTON_RELEASE. */
