@@ -16,44 +16,23 @@
  * License along with CTK; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CTK_CONTAINER_HXX
-#define CTK_CONTAINER_HXX
+#ifndef CTK_STYLE_HXX
+#define CTK_STYLE_HXX
 
-#include "pugl/pugl.h"
-
-#include <cairo/cairo.h>
-#include <vector>
-
-#include "widget.hxx"
+#include <string>
+#include <map>
 
 namespace CTK {
 
-class UI;
-
-class Container : public CTK::Widget
+class Style
 {
-public:
-    const char* type = "container";
+protected:
+    std::map<std::string, std::map<std::string, std::string>> rules;
     
-    Container (CTK::UI* ui);
-    virtual ~Container ();
-    
-    std::vector<CTK::Widget*> children;
-    
-    virtual void add (CTK::Widget* w, int x = 0, int y = 0, int z = 0);
-    virtual void remove (CTK::Widget* w);
-    
-    virtual void recalc ();
-    virtual void rescale (float s);
-    virtual void repos (int x, int y);
-    virtual void expose ();
-    
-    virtual void calcDimensions();
-    virtual void calcZDepth();
-    
-    CTK::ZDepth getZDepth (CTK::Widget *w);
+    void loadStyle (std::string fname);
+    std::string parseValue (std::string value);
 };
 
-};
+}; // namespace CTK
 
-#endif // CTK_CONTAINER_HXX
+#endif // CTK_STYLE_HXX

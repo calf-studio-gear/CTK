@@ -107,6 +107,14 @@ void Container::calcDimensions()
         children[i]->calcDimensions();
 }
 
+void Container::calcZDepth()
+{
+    if (DEBUG_LAYOUT) printf(CONTAINER_DEBUG_H "calcZDepth\n", id);
+    Widget::calcZDepth();
+    for (unsigned int i = 0; i < children.size(); i++)
+        children[i]->calcZDepth();
+}
+
 
 void Container::add (CTK::Widget* w, int x, int y, int z)
 {
@@ -126,7 +134,7 @@ void Container::add (CTK::Widget* w, int x, int y, int z)
     if (!in)
         children.push_back(w);
     w->parent = this;
-    
+    w->calcZDepth();
     recalc();
 }
 

@@ -1,0 +1,34 @@
+#Name CTK Default Theme
+#Author Markus Schmidt (schmidt@boomshop.net)
+#Date 2018
+#Description Default theme as fallback
+
+Widget {
+    muaha =foo;
+}
+
+Widget::syntaxtest { margin =2    ; }
+
+Widget::bordertest
+{
+  b_top=1;
+  b_bottom=1;
+  border=2;
+}
+
+Widget::margintest
+{
+  m_top=1;
+  m_bottom=1;
+  margin= 2 4 3 5;
+  margin = 5;
+}
+
+   Widget::bgtest {
+    bg_image = background.png;
+    bg_sizing = contain;
+}
+
+Container::mycontainer * Widget::mywidget {
+  margin = 4;
+}

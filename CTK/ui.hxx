@@ -27,10 +27,11 @@
 #include <list>
 
 #include "container.hxx"
+#include "style.hxx"
 
 namespace CTK {
 
-class UI : public CTK::Container
+class UI : public CTK::Container, public CTK::Style
 {
 public:
     const char* type = "ui";
@@ -56,6 +57,8 @@ public:
     void addEvent(CTK::Widget *widget, CTK::EventType type, int (*callback)(CTK::Widget*, const void*, void*), void *data = NULL);
     void removeEvent(CTK::Widget *widget, CTK::EventType type, int (*callback)(CTK::Widget*, const void*, void*));
     
+    virtual void rescale (float scale);
+    
 protected:
     PuglView* view;
     std::list<CTK::Widget*> queue;
@@ -63,7 +66,6 @@ protected:
     
     bool quit;
     
-    virtual void rescale (float scale);
     virtual void resize ();
     virtual void recalc ();
     virtual void expose ();

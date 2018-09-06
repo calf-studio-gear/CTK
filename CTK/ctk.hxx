@@ -22,6 +22,7 @@
 #include <string>
 
 #include "typedef.hxx"
+#include "style.hxx"
 #include "ui.hxx"
 #include "widget.hxx"
 #include "container.hxx"

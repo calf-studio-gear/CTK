@@ -133,4 +133,14 @@ DemoUI::DemoUI (PuglNativeWindow parent, const char* _title) : CTK::UI (parent, 
     box2->fireEvent(CTK::EVENT_TOGGLED);
     box2->removeEvent(CTK::EVENT_TOGGLED, &toggletest);
     box2->fireEvent(CTK::EVENT_TOGGLED);
+    
+    /* style */
+    
+    //ui->loadStyle("../styles/default.style");
+    
+    //CTK::UI *popup = new CTK::UI();
+    //popup->run();
+    //CTK::Widget* entry = new CTK::Widget(popup);
+    //entry->resize(50, 10);
+    //popup->add(entry, 10, 40, 2);
 }

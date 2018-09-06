@@ -273,18 +273,17 @@ void Widget::fireEvent(CTK::EventType type)
     }
 }
 
-std::list<CTK::ZDepth> Widget::getZDepth ()
+void Widget::calcZDepth ()
 {
     CTK::Widget* w = 0;
-    std::list<CTK::ZDepth> l = {};
+    zDepth = {};
     if (id) {
         w = this;
         do {
-            l.push_front(w->parent->getZDepth(w));
+            zDepth.push_front(w->parent->getZDepth(w));
             w = w->parent;
         } while (w->parent);
     }
-    if (DEBUG_EVENT) printf(WIDGET_DEBUG_H "getZDepth size:%d\n", w->id, l.size());
-    return l;
+    if (DEBUG_EVENT) printf(WIDGET_DEBUG_H "getZDepth size:%d\n", w->id, zDepth.size());
 };
 

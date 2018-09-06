@@ -48,7 +48,8 @@ public:
     int id;
     float scale;
     bool visible;
-    std::string role;
+    std::string style;
+    std::list<std::string> styles;
     
     CTK::Container* parent;
     CTK::UI* ui;
@@ -57,6 +58,7 @@ public:
     
     Widget (CTK::UI* ui);
     virtual ~Widget();
+    std::list<CTK::ZDepth> zDepth;
 
     virtual void redraw ();
     virtual void resize ();
@@ -73,7 +75,7 @@ public:
     virtual void removeEvent(CTK::EventType type, int (*callback)(CTK::Widget*, void*));
     virtual void fireEvent(CTK::EventType type);
     
-    std::list<CTK::ZDepth> getZDepth ();
+    void calcZDepth ();
     
     void calcDimensions();
     void setInvalidClip (cairo_t* cr);

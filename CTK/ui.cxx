@@ -17,7 +17,6 @@
  */
 
 #include "pugl/pugl.h"
-#include "picojson/picojson.hxx"
 
 #include <algorithm>
 #include <iostream>
@@ -26,7 +25,7 @@
 
 using namespace CTK;
 
-UI::UI(PuglNativeWindow parent, const char* _title) : Container(this),
+UI::UI(PuglNativeWindow parent, const char* _title) : Container(this), Style(),
     title(_title)
 {
     if (DEBUG_MAIN) printf("%sConstruct UI #%d%s\n", COL_RED, id, COL_0);
@@ -46,6 +45,8 @@ UI::UI(PuglNativeWindow parent, const char* _title) : Container(this),
     puglSetHandle       (view, this);
     puglCreateWindow    (view, title);
     puglShowWindow      (view);
+    
+    loadStyle("../styles/default.style");
     
     rescale(scale);
 }
@@ -388,10 +389,10 @@ bool compareZDepth (CTK::GenericEventMeta *a, CTK::GenericEventMeta *b)
 {
     /* sort callback. returns true if first arg is before second one */
     
-    std::list<CTK::ZDepth>::iterator ia = a->zDepth.begin();
-    std::list<CTK::ZDepth>::iterator ib = b->zDepth.begin();
+    std::list<CTK::ZDepth>::iterator ia = a->zDepth->begin();
+    std::list<CTK::ZDepth>::iterator ib = b->zDepth->begin();
     
-    while (ia != a->zDepth.end() and ib != b->zDepth.end()) {
+    while (ia != a->zDepth->end() and ib != b->zDepth->end()) {
         if ((*ia).z > (*ib).z) {
             return true;
         }
@@ -423,7 +424,7 @@ void UI::addEvent (CTK::Widget *widget, CTK::EventType type, int (*callback)(CTK
     em->buttons = 0;
     em->drag = NULL;
     em->hover = false;
-    em->zDepth = widget->getZDepth();
+    em->zDepth = &widget->zDepth;
     
     events[type].push_back(em);
     events[type].sort(compareZDepth);

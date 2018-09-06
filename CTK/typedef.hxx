@@ -21,6 +21,7 @@
 
 #include <string>
 #include <list>
+#include <vector>
 #include <pugl/pugl.h>
 
 #define DEBUG_MAIN 0
@@ -86,25 +87,31 @@ typedef enum
     BG_SCALE
 } ImageSizing;
 
+typedef enum
+{
+    LENGTH_PIXELS,
+    LENGTH_PERCENT
+} Length;
+
+typedef struct {
+    float w;
+    float h;
+} Dimensions;
+
 typedef struct
 {
-    float m_top;
-    float m_bottom;
-    float m_left;
-    float m_right;
+    std::vector<int> margin;
     
-    float  b_top;
-    float  b_bottom;
-    float  b_left;
-    float  b_right;
-    Color* b_color;
+    std::vector<int> border_width;
+    std::vector<int> border_dash;
+    Color*           border_color;
     
     Color*           bg_color;
     std::string      bg_image;
     Rect*            bg_dimensions;
     bool             bg_repeat;
     CTK::ImageSizing bg_sizing;
-} Style;
+} Theme;
 
 
 
@@ -121,7 +128,7 @@ typedef struct {
 
 typedef struct : BasicEventMeta {
     int (*callback)(CTK::Widget*, const void*, void*);
-    std::list<CTK::ZDepth> zDepth;
+    std::list<CTK::ZDepth> *zDepth;
     unsigned int buttons;
     const void *drag;
     bool hover;
