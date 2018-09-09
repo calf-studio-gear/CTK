@@ -25,6 +25,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <list>
+#include <unordered_map>
 
 #include "container.hxx"
 #include "style.hxx"
@@ -63,8 +64,6 @@ protected:
     PuglView* view;
     std::list<CTK::Widget*> queue;
     std::list<CTK::GenericEventMeta*> events[CTK::GENERIC_EVENT_TYPE_SIZE];
-    std::map<std::string, CTK::Ressource*> ressources;
-    
     bool quit;
     
     virtual void resize ();

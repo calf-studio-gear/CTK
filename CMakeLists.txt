@@ -18,11 +18,53 @@ option(CTK_TEST            "Build test program"                                 
 
 
 ################################################################################
-### Code compilation starts here
+### Resource generator functions
+################################################################################
+
+set_property (GLOBAL PROPERTY CTK_RESOURCES_DEFS)
+set_property (GLOBAL PROPERTY CTK_RESOURCES_MEMS)
+
+function (read_resources dir)
+  file(GLOB bins "${dir}/*")
+  foreach (bin ${bins})
+    if (IS_DIRECTORY "${bin}")
+      read_resources("${bin}")
+    else ()
+      string (REPLACE "${PROJECT_SOURCE_DIR}" "resource" filename "${bin}")
+      string (REGEX REPLACE "[^a-zA-Z0-9_]+" "_" filename "${filename}")
+      string (REPLACE "${PROJECT_SOURCE_DIR}/" "" varname "${bin}")
+      string (REGEX REPLACE "[^a-zA-Z0-9_]+" "_" varname "${varname}")
+      file (READ ${bin} filedata HEX)
+      string (REGEX REPLACE "([0-9a-f][0-9a-f])" "0x\\1," filedata "${filedata}")
+      get_property (defs GLOBAL PROPERTY CTK_RESOURCES_DEFS)
+      get_property (mems GLOBAL PROPERTY CTK_RESOURCES_MEMS)
+      string (APPEND defs "const unsigned char ${filename}[] = {${filedata}};\n")
+      string (APPEND mems "    {\"${varname}\", Resource(sizeof(${filename}), ${filename})},\n")
+      set_property (GLOBAL PROPERTY CTK_RESOURCES_DEFS "${defs}")
+      set_property (GLOBAL PROPERTY CTK_RESOURCES_MEMS "${mems}")
+    endif ()
+  endforeach ()
+endfunction ()
+
+function (create_resources template dir output)
+  file (READ "${template}" temp)
+  file (WRITE "${output}" "")
+  read_resources("${dir}")
+  get_property (defs GLOBAL PROPERTY CTK_RESOURCES_DEFS)
+  get_property (mems GLOBAL PROPERTY CTK_RESOURCES_MEMS)
+  string (REPLACE ":::definitions:::" "${defs}" temp "${temp}")
+  string (REPLACE ":::members:::" "${mems}" temp "${temp}")
+  file (APPEND "${output}" "${temp}")
+endfunction ()
+
+################################################################################
+### Compilation
 ################################################################################
 
 ADD_DEFINITIONS( "-DCTK_VERSION_STRING=\"${CTK_VERSION}\"" )
 
+create_resources ("${PROJECT_SOURCE_DIR}/templates/resources.h.in" "${PROJECT_SOURCE_DIR}/styles" "${PROJECT_SOURCE_DIR}/CTK/resources.h")
+  
 include_directories ("${PROJECT_SOURCE_DIR}/CTK/")
 
 find_package(PkgConfig)

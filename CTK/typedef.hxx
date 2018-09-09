@@ -122,16 +122,6 @@ typedef struct
     CTK::ImageSizing bg_sizing;
 } Theme;
 
-typedef enum
-{
-    RC_TYPE_
-} RessourceType;
-
-typedef struct
-{
-    CTK::RessourceType type;
-} Ressource;
-
 typedef struct
 {
     uint32_t z;

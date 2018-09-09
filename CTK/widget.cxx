@@ -24,6 +24,7 @@
 #include "typedef.hxx"
 #include "widget.hxx"
 #include "ui.hxx"
+#include "resources.h"
 
 using namespace CTK;
 
