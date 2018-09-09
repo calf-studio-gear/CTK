@@ -44,3 +44,9 @@ int customtest (CTK::Widget *widget, void *data) {
 myWidget->addEvent(1024, &customtest);
 myWidget->fireEvent(1024);
 ```
+
+## Resources
+
+CTK is fully self-contained without using external files. Resource files
+like style definitions, background images or XML layout files can be
+linked into the final executable via cmake build process.
