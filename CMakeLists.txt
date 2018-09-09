@@ -24,11 +24,11 @@ option(CTK_TEST            "Build test program"                                 
 set_property (GLOBAL PROPERTY CTK_RESOURCES_DEFS)
 set_property (GLOBAL PROPERTY CTK_RESOURCES_MEMS)
 
-function (read_resources dir)
-  file(GLOB bins "${dir}/*")
+function (add_resources uri)
+  file(GLOB bins "${uri}/*")
   foreach (bin ${bins})
     if (IS_DIRECTORY "${bin}")
-      read_resources("${bin}")
+      add_resources("${bin}")
     else ()
       string (REPLACE "${PROJECT_SOURCE_DIR}" "resource" filename "${bin}")
       string (REGEX REPLACE "[^a-zA-Z0-9_]+" "_" filename "${filename}")
@@ -46,10 +46,9 @@ function (read_resources dir)
   endforeach ()
 endfunction ()
 
-function (create_resources template dir output)
+function (create_resources template output)
   file (READ "${template}" temp)
   file (WRITE "${output}" "")
-  read_resources("${dir}")
   get_property (defs GLOBAL PROPERTY CTK_RESOURCES_DEFS)
   get_property (mems GLOBAL PROPERTY CTK_RESOURCES_MEMS)
   string (REPLACE ":::definitions:::" "${defs}" temp "${temp}")
@@ -63,7 +62,8 @@ endfunction ()
 
 ADD_DEFINITIONS( "-DCTK_VERSION_STRING=\"${CTK_VERSION}\"" )
 
-create_resources ("${PROJECT_SOURCE_DIR}/templates/resources.h.in" "${PROJECT_SOURCE_DIR}/styles" "${PROJECT_SOURCE_DIR}/CTK/resources.h")
+add_resources ("${PROJECT_SOURCE_DIR}/styles")
+create_resources ("${PROJECT_SOURCE_DIR}/templates/resources.h.in" "${PROJECT_SOURCE_DIR}/CTK/resources.h")
   
 include_directories ("${PROJECT_SOURCE_DIR}/CTK/")
 
